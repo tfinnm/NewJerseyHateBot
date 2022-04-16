@@ -22,6 +22,8 @@ class MyClient(discord.Client):
     async def on_message(self, message):
         if message.author.id == 964331688832417802 or  message.channel.id in config.banned_channels or message.author.bot:
             return
+        if message.author.id in config.cursed_users:
+            curse(message)
         if "newjersey" in message.content.lower().replace(" ",""):
             c_user = user.get_user(message.author.id)
             c_user.new_jersey_count += 1
@@ -75,7 +77,13 @@ class MyClient(discord.Client):
         while vc.is_playing():
             sleep(.1)
 
-
+async def curse(message):
+    voice = message.author.voice.channel
+    vc = await voice.connect()
+    audio_files = os.listdir("curseaudio_files")
+    vc.play(discord.FFmpegPCMAudio(source="curseaudio_files/" + audio_files[random.randrange(len(audio_files))]))
+    while vc.is_playing():
+        sleep(.1)
 
 async def yt(message, url):
     YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
